@@ -100,7 +100,7 @@ const ContactSection = () => {
               </div>
               <div>
                 <h3 className="font-heading font-bold text-primary">Szolgáltatási terület</h3>
-                <p className="text-muted-foreground">[Budapest] és környéke</p>
+                <p className="text-muted-foreground">Az ország egész területén</p>
               </div>
             </div>
           </motion.div>

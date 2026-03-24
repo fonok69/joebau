@@ -34,7 +34,7 @@ const AboutSection = () => {
             Miért a Joe Bau csapatát válassza?
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            Legyen szó induló építkezésről vagy teljes lakásfelújításról, vidám, fiatalos és precíz csapatunk minden terhet levesz a válláról. Az anyagbeszerzéstől a generálkivitelezésig mindent ránk bízhat <strong>[Budapest]</strong> és környékén. Megbízhatóság, precizitás és tisztaság – ezek vagyunk mi.
+            Legyen szó induló építkezésről vagy teljes lakásfelújításról, vidám, fiatalos és precíz csapatunk minden terhet levesz a válláról. Az anyagbeszerzéstől a generálkivitelezésig mindent ránk bízhat szerte az országban. Megbízhatóság, precizitás és tisztaság – ezek vagyunk mi.
           </p>
         </motion.div>
 
