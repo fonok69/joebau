@@ -2,8 +2,8 @@ import { motion } from "framer-motion";
 import { Building2, Hammer, BrickWall, LayoutGrid, Fence, PaintBucket, Thermometer } from "lucide-react";
 
 const services = [
-  { icon: Building2, title: "Generálkivitelezés és Lakásfelújítás", desc: "Teljes körű lakásfelújítás A-tól Z-ig – kulcsrakész megoldások [Budapest] és környékén." },
-  { icon: Hammer, title: "Ácsmunkák és Tetőfedés", desc: "Profi tetőfedés, tetőjavítás, akár S.O.S. tetőjavítás sürgős esetben is [Város] környékén." },
+  { icon: Building2, title: "Generálkivitelezés és Lakásfelújítás", desc: "Teljes körű lakásfelújítás A-tól Z-ig – kulcsrakész megoldások országszerte." },
+  { icon: Hammer, title: "Ácsmunkák és Tetőfedés", desc: "Profi tetőfedés, tetőjavítás, akár S.O.S. tetőjavítás sürgős esetben is, bárhol az országban." },
   { icon: BrickWall, title: "Kőműves munkák", desc: "Megbízható kőműves és burkoló: falazás, vakolás, betonozás professzionális kivitelben." },
   { icon: LayoutGrid, title: "Burkolás", desc: "Hideg-meleg burkolás, csempe- és járólaprakás precíz munkával." },
   { icon: Fence, title: "Térkövezés és Kerítésépítés", desc: "Térkövezés és kocsibeálló építés, teraszok, kerítések tervezése és kivitelezése." },

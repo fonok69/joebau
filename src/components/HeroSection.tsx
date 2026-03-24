@@ -41,7 +41,7 @@ const HeroSection = () => {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mt-6 text-lg md:text-xl text-primary-foreground/80 max-w-2xl mx-auto"
         >
-          Sokéves tapasztalattal, garanciával és teljes körű anyagbeszerzéssel vesszük le a terhet a válláról – <strong>[Budapest]</strong> és környékén.
+          Sokéves tapasztalattal, garanciával és teljes körű anyagbeszerzéssel vesszük le a terhet a válláról – az ország egész területén.
         </motion.p>
 
         <motion.div
