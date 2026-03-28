@@ -2,18 +2,40 @@ import { useState, FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Send, Phone, Mail, MapPin } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactSection = () => {
   const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    setTimeout(() => {
+
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const phone = formData.get("phone") as string;
+    const message = formData.get("message") as string;
+
+    try {
+      const { data, error } = await supabase.functions.invoke("notify-admin", {
+        body: { name, email, phone, message },
+      });
+
+      if (error) {
+        console.error("Error:", error);
+        toast.error("Hiba történt az ajánlatkérés küldése közben. Kérjük, próbálja újra.");
+      } else {
+        toast.success("Köszönjük! Hamarosan felvesszük Önnel a kapcsolatot.");
+        form.reset();
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      toast.error("Hiba történt. Kérjük, próbálja újra később.");
+    } finally {
       setSending(false);
-      toast.success("Köszönjük! Hamarosan felvesszük Önnel a kapcsolatot.");
-      (e.target as HTMLFormElement).reset();
-    }, 1000);
+    }
   };
 
   return (
