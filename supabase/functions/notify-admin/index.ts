@@ -6,20 +6,13 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-interface ContactSubmission {
-  name: string;
-  email: string;
-  phone?: string;
-  message: string;
-}
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { name, email, phone, message }: ContactSubmission = await req.json();
+    const { name, email, phone, message } = await req.json();
 
     if (!name || !email || !message) {
       return new Response(
@@ -27,9 +20,6 @@ Deno.serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-
-    // Admin notification email addresses
-    const ADMIN_EMAIL = "info@joebau.hu";
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -48,17 +38,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Send notification email using Supabase's built-in email (via Edge Function invocation)
-    // For now, we log the submission. Email sending can be configured later with a proper email service.
-    console.log("New quote request received:");
-    console.log(`Name: ${name}`);
-    console.log(`Email: ${email}`);
-    console.log(`Phone: ${phone || "N/A"}`);
-    console.log(`Message: ${message}`);
-
-    // Try sending email via Resend if API key is available
+    // Send admin notification email via Resend
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (resendApiKey) {
+      const ADMIN_EMAIL = "info@joebau.hu";
       try {
         const emailResponse = await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -67,11 +50,11 @@ Deno.serve(async (req) => {
             Authorization: `Bearer ${resendApiKey}`,
           },
           body: JSON.stringify({
-            from: "Joe Bau Értesítő <noreply@joebau.hu>",
+            from: "Joe Bau Értesítő <onboarding@resend.dev>",
             to: [ADMIN_EMAIL],
-            subject: `🏗️ Új ajánlatkérés: ${name}`,
+            subject: `Új ajánlatkérés: ${name}`,
             html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <div style="background: linear-gradient(135deg, #1a365d, #2d4a7a); padding: 24px; border-radius: 12px 12px 0 0;">
                   <h1 style="color: white; margin: 0; font-size: 22px;">🏗️ Új Ajánlatkérés Érkezett!</h1>
                 </div>
@@ -87,7 +70,7 @@ Deno.serve(async (req) => {
                     </tr>
                     <tr>
                       <td style="padding: 12px 0; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: #1a365d;">Telefon:</td>
-                      <td style="padding: 12px 0; border-bottom: 1px solid #e2e8f0;"><a href="tel:${phone}" style="color: #f97316;">${phone || "Nincs megadva"}</a></td>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #e2e8f0;"><a href="tel:${phone || ''}" style="color: #f97316;">${phone || "Nincs megadva"}</a></td>
                     </tr>
                     <tr>
                       <td style="padding: 12px 0; font-weight: bold; color: #1a365d; vertical-align: top;">Üzenet:</td>
@@ -112,14 +95,13 @@ Deno.serve(async (req) => {
         }
       } catch (emailErr) {
         console.error("Email send error:", emailErr);
-        // Don't fail the request if email fails - data is saved
       }
     } else {
-      console.log("RESEND_API_KEY not set - email notification skipped. Submission saved to database.");
+      console.log("RESEND_API_KEY not set - email skipped");
     }
 
     return new Response(
-      JSON.stringify({ success: true, message: "Ajánlatkérés sikeresen elküldve" }),
+      JSON.stringify({ success: true }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
