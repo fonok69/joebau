@@ -57,6 +57,22 @@ const AdminDashboard = () => {
     setLoading(false);
   };
 
+  const toggleStatus = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === "new" ? "viewed" : "new";
+    const { error } = await supabase
+      .from("contact_submissions")
+      .update({ status: newStatus } as any)
+      .eq("id", id);
+
+    if (error) {
+      toast.error("Hiba a státusz módosításakor.");
+    } else {
+      setSubmissions(prev =>
+        prev.map(s => s.id === id ? { ...s, status: newStatus } : s)
+      );
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/admin/login");
