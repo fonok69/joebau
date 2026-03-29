@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Mail, Phone, Clock, User, MessageSquare, RefreshCw } from "lucide-react";
+import { LogOut, Mail, Phone, Clock, User, MessageSquare, RefreshCw, Eye, EyeOff } from "lucide-react";
 
 interface Submission {
   id: string;
@@ -11,6 +11,7 @@ interface Submission {
   phone: string | null;
   message: string;
   created_at: string;
+  status: string;
 }
 
 const AdminDashboard = () => {
