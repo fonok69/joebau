@@ -5,11 +5,13 @@ import ServicesSection from "@/components/ServicesSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import AdminFloatingTab from "@/components/AdminFloatingTab";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+      <AdminFloatingTab />
       <main>
         <HeroSection />
         <AboutSection />

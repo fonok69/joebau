@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { LogOut, Mail, Phone, Clock, User, MessageSquare, RefreshCw } from "lucide-react";
+import { LogOut, Mail, Phone, Clock, User, MessageSquare, RefreshCw, Eye, EyeOff } from "lucide-react";
 
 interface Submission {
   id: string;
@@ -11,6 +11,7 @@ interface Submission {
   phone: string | null;
   message: string;
   created_at: string;
+  status: string;
 }
 
 const AdminDashboard = () => {
@@ -54,6 +55,22 @@ const AdminDashboard = () => {
       setSubmissions(data || []);
     }
     setLoading(false);
+  };
+
+  const toggleStatus = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === "new" ? "viewed" : "new";
+    const { error } = await supabase
+      .from("contact_submissions")
+      .update({ status: newStatus } as any)
+      .eq("id", id);
+
+    if (error) {
+      toast.error("Hiba a státusz módosításakor.");
+    } else {
+      setSubmissions(prev =>
+        prev.map(s => s.id === id ? { ...s, status: newStatus } : s)
+      );
+    }
   };
 
   const handleLogout = async () => {
@@ -106,15 +123,15 @@ const AdminDashboard = () => {
             <p className="text-3xl font-bold text-primary">{submissions.length}</p>
           </div>
           <div className="bg-card rounded-xl p-6 border border-border">
-            <p className="text-sm text-muted-foreground mb-1">Mai ajánlatkérések</p>
+            <p className="text-sm text-muted-foreground mb-1">Új (olvasatlan)</p>
             <p className="text-3xl font-bold text-accent">
-              {submissions.filter(s => new Date(s.created_at).toDateString() === new Date().toDateString()).length}
+              {submissions.filter(s => s.status === "new").length}
             </p>
           </div>
           <div className="bg-card rounded-xl p-6 border border-border">
-            <p className="text-sm text-muted-foreground mb-1">Elmúlt 7 nap</p>
+            <p className="text-sm text-muted-foreground mb-1">Megtekintett</p>
             <p className="text-3xl font-bold text-primary">
-              {submissions.filter(s => new Date(s.created_at) > new Date(Date.now() - 7 * 86400000)).length}
+              {submissions.filter(s => s.status === "viewed").length}
             </p>
           </div>
         </div>
@@ -132,14 +149,19 @@ const AdminDashboard = () => {
         ) : (
           <div className="space-y-4">
             {submissions.map((sub) => (
-              <div key={sub.id} className="bg-card rounded-xl p-6 border border-border hover:shadow-md transition-shadow">
+              <div key={sub.id} className={`bg-card rounded-xl p-6 border transition-shadow hover:shadow-md ${sub.status === "new" ? "border-accent border-l-4" : "border-border"}`}>
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 gradient-navy rounded-full flex items-center justify-center shrink-0">
-                      <User size={18} className="text-primary-foreground" />
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${sub.status === "new" ? "bg-accent/20" : "gradient-navy"}`}>
+                      <User size={18} className={sub.status === "new" ? "text-accent" : "text-primary-foreground"} />
                     </div>
                     <div>
-                      <h3 className="font-bold text-foreground">{sub.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-foreground">{sub.name}</h3>
+                        {sub.status === "new" && (
+                          <span className="text-xs bg-accent text-accent-foreground px-2 py-0.5 rounded-full font-semibold">ÚJ</span>
+                        )}
+                      </div>
                       <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mt-0.5">
                         <a href={`mailto:${sub.email}`} className="flex items-center gap-1 hover:text-accent transition-colors">
                           <Mail size={14} /> {sub.email}
@@ -152,9 +174,21 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground shrink-0">
-                    <Clock size={14} />
-                    {formatDate(sub.created_at)}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <button
+                      onClick={() => toggleStatus(sub.id, sub.status)}
+                      className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border transition-colors ${
+                        sub.status === "new"
+                          ? "border-accent text-accent hover:bg-accent/10"
+                          : "border-border text-muted-foreground hover:bg-muted"
+                      }`}
+                    >
+                      {sub.status === "new" ? <><Eye size={14} /> Megjelölés olvasottnak</> : <><EyeOff size={14} /> Vissza újként</>}
+                    </button>
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Clock size={14} />
+                      {formatDate(sub.created_at)}
+                    </div>
                   </div>
                 </div>
                 <div className="bg-muted rounded-lg p-4">
